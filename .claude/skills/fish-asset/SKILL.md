@@ -15,7 +15,7 @@ Assets are made reproducibly from scripts, never by hand in the Blender GUI.
 
 - Units in meters, with a real-world size (e.g. a neon tetra is about 0.03 m, an angelfish about 0.15 m). The scene scales the tank, not the fish.
 - In glTF the fish faces **+Z** with **+Y** up (Three.js `lookAt` points +Z along the swim direction), and the origin is at the center of mass. The exporter's Y-up conversion maps Blender -Y to glTF +Z, so model the fish facing **Blender -Y**, with Z up.
-- Swimming is a vertex shader. Give the mesh enough segments along its length, and store normalized body position (0 = nose, 1 = tail tip) in a vertex color or UV2 channel so the shader can weight the wave.
+- Swimming is a vertex shader. It derives body position (0 = nose, 1 = tail tip) and height from the model's bounding box (`src/scene/fish.js`), so give the mesh and fins enough segments along the length, and keep the nose as the max-Z point.
 - Budget per fish: 3k triangles or fewer, one PBR material, textures at 1024 px or smaller. Dozens of fish have to run on an AMD iGPU.
 - Materials: Principled BSDF only (it exports cleanly to glTF). Use subsurface/sheen-like tricks through the Three.js material, not Blender-only nodes.
 
