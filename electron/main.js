@@ -19,10 +19,19 @@ function createWindow() {
     frame: false,
     resizable: false,
     movable: false,
-    focusable: false,
+    // Never set focusable: false here: on Linux it makes the window override-redirect, so it
+    // escapes the WM and paints above every app and the GNOME shell.
     skipTaskbar: true,
+    // Frameless windows get client-side shadow margins (_GTK_FRAME_EXTENTS) that offset the content.
+    hasShadow: false,
+    show: false,
     backgroundColor: '#021018',
     webPreferences: { backgroundThrottling: true },
+  });
+  // Mutter may adjust the requested geometry at map time; pin it back to the full panel.
+  win.once('ready-to-show', () => {
+    win.show();
+    win.setBounds(bounds);
   });
 
   if (process.env.VITE_DEV_URL) {
