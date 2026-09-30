@@ -7,8 +7,9 @@ Assets are made reproducibly from scripts, never by hand in the Blender GUI.
 
 ## Layout (default, unless the repo already does it differently)
 
-- Script: `assets/src/<name>.py`. Output: `public/models/<name>.glb`. Textures the script generates or bakes are embedded in the `.glb`.
-- Run with: `blender -b -P assets/src/<name>.py -- --out public/models/<name>.glb`. Blender is the snap at `/snap/bin/blender`. Snap confinement can block paths outside `$HOME`, so keep outputs inside the repo.
+- Fish: add a body-plan entry to `SPECIES` in `assets/src/fish.py` (one generator for all species), then a matching entry (pattern GLSL + behavior: `school` / `solitary` / `bottom`) in `src/scene/species.js`. Patterns are shader-side from position, so the `.glb` stays geometry-only (`Body` + `Fins`).
+- Other props: script at `assets/src/<name>.py`, output `public/models/<name>.glb`.
+- Run with: `blender -b --factory-startup -P assets/src/<name>.py`. Blender is the snap at `/snap/bin/blender`. Snap confinement can block paths outside `$HOME`, so keep outputs inside the repo.
 
 ## Conventions the renderer relies on
 

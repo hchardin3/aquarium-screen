@@ -13,7 +13,8 @@ A live, realistic aquarium wallpaper (fish, seaweed, bubbles) for the owner's Ub
 - Wood/rock/gravel use CC0 Poly Haven scans: run `python3 assets/src/fetch_textures.py` before rendering (`assets/textures/` is gitignored; commit the plates).
 - The Blender camera and `src/scene/tank.js` `CAMERA` must stay identical (fov_y 35, 0.95 m, Blender (x,y,z) -> Three (x,z,-y)), or live fish float off the tank.
 - The `front` pass must exclude the Water volume: with a transparent film Cycles turns absorption into alpha and darkens the whole live scene.
-- Fish are glTF (`.glb`) from headless Blender scripts (`blender -b -P <script>.py`, snap install). See the `fish-asset` skill. Swimming is a vertex-shader body wave, not skeletal rigs.
+- Fish are glTF (`.glb`) from `assets/src/fish.py` (headless Blender, snap install); species look/behavior in `src/scene/species.js`. See the `fish-asset` skill. Swimming is a vertex-shader body wave, not skeletal rigs.
+- Fish materials share one `onBeforeCompile` source, so each needs a distinct `customProgramCacheKey` or Three reuses the first species' shader.
 - Production Electron loads `app://aquarium/` (custom protocol in `electron/main.js`) because `fetch()` of `file://` fails and GLTFLoader needs fetch.
 
 ## Target environment constraints

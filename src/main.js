@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { CAMERA } from './scene/tank.js';
 import { createPlates, createLightRays } from './scene/plates.js';
-import { createSchool } from './scene/school.js';
+import { createFish } from './scene/fish.js';
 import { createBubbles } from './scene/bubbles.js';
 import { createParticles } from './scene/particles.js';
 import { createPointer } from './scene/pointer.js';
@@ -33,7 +33,7 @@ scene.add(tankLight);
 const pointer = createPointer(camera, renderer.domElement);
 const updaters = [
   createPlates(scene),
-  createSchool(scene, renderer, pointer),
+  createFish(scene, renderer, pointer),
   createBubbles(scene),
   createParticles(scene),
   createLightRays(scene),
