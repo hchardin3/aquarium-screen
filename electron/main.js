@@ -1,8 +1,23 @@
-import { app, BrowserWindow, screen } from 'electron';
+import { app, BrowserWindow, net, protocol, screen } from 'electron';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const DIST = path.join(__dirname, '..', 'dist');
+
+// Serve dist/ over app:// so fetch() works (GLTFLoader cannot fetch file:// URLs).
+protocol.registerSchemesAsPrivileged([
+  { scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true } },
+]);
+
+function serveDist() {
+  protocol.handle('app', (request) => {
+    const { pathname } = new URL(request.url);
+    const file = path.normalize(path.join(DIST, decodeURIComponent(pathname)));
+    if (!file.startsWith(DIST + path.sep)) return new Response('Forbidden', { status: 403 });
+    return net.fetch(pathToFileURL(file).toString());
+  });
+}
 
 // The laptop panel (eDP) sits at +0+0; HDMI is to its right. Pick by bounds, not index.
 function laptopDisplay() {
@@ -25,7 +40,7 @@ function createWindow() {
     // Frameless windows get client-side shadow margins (_GTK_FRAME_EXTENTS) that offset the content.
     hasShadow: false,
     show: false,
-    backgroundColor: '#021018',
+    backgroundColor: '#050d07',
     webPreferences: { backgroundThrottling: true },
   });
   // Mutter may adjust the requested geometry at map time; pin it back to the full panel.
@@ -34,12 +49,11 @@ function createWindow() {
     win.setBounds(bounds);
   });
 
-  if (process.env.VITE_DEV_URL) {
-    win.loadURL(process.env.VITE_DEV_URL);
-  } else {
-    win.loadFile(path.join(__dirname, '..', 'dist', 'index.html'));
-  }
+  win.loadURL(process.env.VITE_DEV_URL ?? 'app://aquarium/index.html');
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  serveDist();
+  createWindow();
+});
 app.on('window-all-closed', () => app.quit());

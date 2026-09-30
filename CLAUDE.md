@@ -9,8 +9,12 @@ A live, realistic aquarium wallpaper (fish, seaweed, bubbles) for the owner's Ub
 ## Stack (decided)
 
 - Electron main process + Three.js renderer, bundled with Vite. Node 22 is on PATH; use npm.
-- Fish/props are glTF (`.glb`) generated with headless Blender scripts (`blender -b -P <script>.py`, snap install). See the `fish-asset` skill.
-- Swimming is a vertex-shader body wave, not skeletal rigs. Water realism comes from shaders (caustics, god rays, depth fog, particles).
+- Hybrid rendering: the static aquascape is pre-rendered in Blender Cycles (`assets/src/aquascape.py` -> `public/plates/{back.jpg,front.png,sway.png}`, OptiX on the RTX 3070, ~6 min full, `-- --preview` / `-- --pass front` for quick iterations). Only fish, bubbles, particles, light shimmer and plant sway are live.
+- Wood/rock/gravel use CC0 Poly Haven scans: run `python3 assets/src/fetch_textures.py` before rendering (`assets/textures/` is gitignored; commit the plates).
+- The Blender camera and `src/scene/tank.js` `CAMERA` must stay identical (fov_y 35, 0.95 m, Blender (x,y,z) -> Three (x,z,-y)), or live fish float off the tank.
+- The `front` pass must exclude the Water volume: with a transparent film Cycles turns absorption into alpha and darkens the whole live scene.
+- Fish are glTF (`.glb`) from headless Blender scripts (`blender -b -P <script>.py`, snap install). See the `fish-asset` skill. Swimming is a vertex-shader body wave, not skeletal rigs.
+- Production Electron loads `app://aquarium/` (custom protocol in `electron/main.js`) because `fetch()` of `file://` fails and GLTFLoader needs fetch.
 
 ## Target environment constraints
 

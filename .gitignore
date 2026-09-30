@@ -4,3 +4,4 @@ dist/
 *.blend1
 .claude/settings.local.json
 CLAUDE.local.md
+assets/textures/

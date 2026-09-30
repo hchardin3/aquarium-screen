@@ -1,11 +1,11 @@
 import * as THREE from 'three';
 
-// Tracks the cursor projected onto the z=0 swim plane. On the desktop window, events only
-// arrive while the cursor is over bare wallpaper; `position` is null otherwise.
-export function createPointer(camera, element) {
+// Tracks the cursor projected onto the school's mid-depth plane. On the desktop window, events
+// only arrive while the cursor is over bare wallpaper; `position` is null otherwise.
+export function createPointer(camera, element, planeZ = 0.04) {
   const state = { position: null };
   const raycaster = new THREE.Raycaster();
-  const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+  const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -planeZ);
   const ndc = new THREE.Vector2();
   const hit = new THREE.Vector3();
 

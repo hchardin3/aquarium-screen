@@ -1,33 +1,42 @@
 import * as THREE from 'three';
-import { TANK } from './scene/tank.js';
-import { createBackdrop } from './scene/backdrop.js';
-import { createFloor } from './scene/floor.js';
+import { CAMERA } from './scene/tank.js';
+import { createPlates, createLightRays } from './scene/plates.js';
+import { createSchool } from './scene/school.js';
 import { createBubbles } from './scene/bubbles.js';
-import { createFish } from './scene/fish.js';
+import { createParticles } from './scene/particles.js';
 import { createPointer } from './scene/pointer.js';
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'low-power' });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
+// The plates are already tone-mapped by Blender (AgX); keep live objects in the same space.
+renderer.toneMapping = THREE.NoToneMapping;
 document.body.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x0a3a4a, 0.55);
+// Stand-in for the water absorption baked into the plates.
+scene.fog = new THREE.Fog(0x0d2213, 0.6, 2.6);
 
-const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.05, 20);
-camera.position.set(0, 0, TANK.cameraZ);
+const camera = new THREE.PerspectiveCamera(
+  CAMERA.fovY,
+  window.innerWidth / window.innerHeight,
+  0.01,
+  10,
+);
+camera.position.set(0, 0, CAMERA.z);
 
-scene.add(new THREE.HemisphereLight(0x9fd8ff, 0x0b1a1f, 1.2));
-const sun = new THREE.DirectionalLight(0xdff6ff, 1.6);
-sun.position.set(0.3, 2, 0.5);
-scene.add(sun);
+scene.add(new THREE.HemisphereLight(0x9cc48f, 0x0c1a0c, 0.7));
+const tankLight = new THREE.DirectionalLight(0xfff4e2, 1.3);
+tankLight.position.set(0.2, 1, 0.35);
+scene.add(tankLight);
 
+const pointer = createPointer(camera, renderer.domElement);
 const updaters = [
-  createBackdrop(scene),
-  createFloor(scene),
+  createPlates(scene),
+  createSchool(scene, renderer, pointer),
   createBubbles(scene),
-  createFish(scene, createPointer(camera, renderer.domElement)),
+  createParticles(scene),
+  createLightRays(scene),
 ];
 
 window.addEventListener('resize', () => {
