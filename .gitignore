@@ -1,0 +1,6 @@
+node_modules/
+dist/
+*.blend
+*.blend1
+.claude/settings.local.json
+CLAUDE.local.md
